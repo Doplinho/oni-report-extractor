@@ -96,7 +96,41 @@ def _figure_style(figure, graph_id, follows, last_cycle, span='30', reset_count=
     return figure
 
 
-def build_figures(reports, span='30', manual_graphs=(), reset_count=0, zoom_ranges=None):
+MATERIAL_FALLBACK_NAMES = {'Algae': 'Algae', 'Carbon': 'Coal', 'Cuprite': 'Copper Ore', 'Copper': 'Copper', 'GoldAmalgam': 'Gold Amalgam', 'IronOre': 'Iron Ore', 'Iron': 'Iron'}
+MATERIAL_DEFAULTS = ['Algae', 'Carbon', 'Cuprite', 'Copper', 'GoldAmalgam', 'IronOre', 'Iron']
+MATERIAL_COLORS = ('#2E91E5','#E15F99','#1CA71C','#FB0D0D','#DA16FF','#B68100','#750D86','#EB663B','#511CFB','#00A08B','#FB00D1','#FC0080','#B2828D','#6C7C32','#778AAE','#862A16','#A777F1','#620042','#1616A7','#DA60CA','#6C4516','#0D2A63','#AF0038','#6F6E00')
+
+
+def material_options(reports):
+    return _material_data(reports)[0]
+
+
+def _material_data(reports):
+    """Build the shared material names, options, and stable color assignments."""
+    names, tags = {}, set(MATERIAL_DEFAULTS)
+    for report in reports:
+        for world in ((report.get('Snapshot') or {}).get('Worlds') or []):
+            for item in world.get('Materials') or []:
+                tag = item.get('Tag')
+                if tag:
+                    tags.add(tag)
+                    if item.get('Name'):
+                        names[tag] = item['Name']
+    options = [{'label': names.get(tag) or MATERIAL_FALLBACK_NAMES.get(tag) or tag, 'value': tag} for tag in tags]
+    options = sorted(options, key=lambda option: (option['label'].casefold(), option['value']))
+    by_tag = {option['value']: option['label'] for option in options}
+    ordered = list(MATERIAL_DEFAULTS)
+    for report in reports:
+        for world in ((report.get('Snapshot') or {}).get('Worlds') or []):
+            for item in world.get('Materials') or []:
+                tag = item.get('Tag')
+                if tag and tag not in ordered:
+                    ordered.append(tag)
+    colors = {tag: MATERIAL_COLORS[index % len(MATERIAL_COLORS)] for index, tag in enumerate(ordered)}
+    return options, by_tag, colors
+
+
+def build_figures(reports, span='30', manual_graphs=(), reset_count=0, zoom_ranges=None, selected_materials=None):
     frame = calculate(reports)
     visible_reports = reports if span == 'all' else reports[-30:]
     visible = frame if span == 'all' else frame.tail(30).copy()
@@ -156,13 +190,18 @@ def build_figures(reports, span='30', manual_graphs=(), reset_count=0, zoom_rang
     figures['energy'] = _figure_style(energy, 'energy', 'energy' not in following, last_cycle, span, reset_count, (zoom_ranges or {}).get('energy'))
 
     materials = go.Figure()
-    material_columns = [('Algae', 'Algae'), ('Coal', 'Coal'), ('Copper Ore', 'Cuprite'), ('Copper', 'Copper'),
-                        ('Gold Amalgam', 'GoldAmalgam'), ('Iron Ore', 'IronOre'), ('Iron', 'Iron')]
-    for label, _tag in material_columns:
-        column = f'material_{label}'
+    selected_materials = MATERIAL_DEFAULTS if selected_materials is None else set(selected_materials)
+    available_tags = sorted(set(MATERIAL_DEFAULTS) | ({tag for values in frame['materials'] if isinstance(values, dict) for tag in values} if not frame.empty else set()))
+    _options, name_by_tag, colors = _material_data(reports)
+    for tag in available_tags:
+        if tag not in selected_materials:
+            continue
+        column = f'material_tag_{tag}'
         if column in visible:
-            materials.add_scatter(x=visible['cycle'], y=visible[column], mode='lines+markers', name=label)
+            materials.add_scatter(x=visible['cycle'], y=visible[column], mode='lines+markers', name=name_by_tag.get(tag) or MATERIAL_FALLBACK_NAMES.get(tag, tag), line={'color': colors[tag]}, meta={'tag': tag})
     materials.update_layout(title='Materiais disponíveis', yaxis_title='kg')
+    if not selected_materials:
+        materials.add_annotation(text='Selecione materiais na lista', xref='paper', yref='paper', x=.5, y=.5, showarrow=False, font={'size': 16})
     figures['materials'] = _figure_style(materials, 'materials', 'materials' not in following, last_cycle, span, reset_count, (zoom_ranges or {}).get('materials'))
 
     stress_values, summaries, leader = stress_summary(reports)
@@ -255,7 +294,10 @@ def _format_status(reports, warnings, game):
 
 def create_app(export_dir=DEFAULT_EXPORT):
     app = Dash(__name__, assets_folder=str(Path(__file__).parent / 'assets'), title='Dashboard ONI')
-    app.layout = html.Main([
+    def serve_layout():
+      initial_reports, _warnings = load_reports(export_dir)
+      initial_options = material_options(initial_reports)
+      return html.Main([
         html.H1('Dashboard ONI'),
         html.Section([html.H2('Estado'), html.Div(id='status'), html.Div(id='warnings')],
                      className='panel'),
@@ -277,13 +319,26 @@ def create_app(export_dir=DEFAULT_EXPORT):
         html.Section([dcc.Graph(id='food-stock', config={'responsive': True}, style={'height': '420px'})], className='panel'),
         html.Section([dcc.Graph(id='oxygen', config={'responsive': True}, style={'height': '420px'}), html.Div(id='oxygen-sources')], className='panel'),
         html.Section([dcc.Graph(id='energy', config={'responsive': True}, style={'height': '420px'}), html.H2('Detalhe de fontes'), html.Div(id='energy-sources')], className='panel'),
-        html.Section([dcc.Graph(id='materials', config={'responsive': True}, style={'height': '420px'}), html.Div(id='materials-table')], className='panel'),
+        html.Section([html.Label('Materiais no gráfico', htmlFor='material-filter'),
+                      dcc.Dropdown(id='material-filter', multi=True, searchable=True, persistence=True,
+                                   persistence_type='local', value=MATERIAL_DEFAULTS, options=initial_options,
+                                   search_value='', labels={
+                                       'select_all': 'Selecionar todos',
+                                       'deselect_all': 'Limpar sele\u00e7\u00e3o',
+                                       'selected_count': '{num_selected} selecionados',
+                                       'search': 'Pesquisar',
+                                       'clear_search': 'Limpar pesquisa',
+                                       'clear_selection': 'Limpar sele\u00e7\u00e3o',
+                                       'no_options_found': 'Nenhum material encontrado',
+                                   }),
+                      dcc.Graph(id='materials', config={'responsive': True}, style={'height': '420px'}), html.Div(id='materials-table')], className='panel'),
         html.Section([dcc.Graph(id='stress', config={'responsive': True}, style={'height': '560px'}),
                       html.Div(id='stress-summary-table')], className='panel'),
         html.Section([
             html.H2('Eventos'), html.Ul(id='events-list'),
         ], className='panel'),
-    ], className='dashboard')
+      ], className='dashboard')
+    app.layout = serve_layout
 
     @app.callback(
         Output('revision-store', 'data'),
@@ -298,6 +353,13 @@ def create_app(export_dir=DEFAULT_EXPORT):
             return current
         return no_update
 
+    @app.callback(Output('material-filter', 'options'), Input('revision-store', 'data'),
+                  State('material-filter', 'options'))
+    def update_material_options(_revision, previous_options):
+        reports, _warnings = load_reports(export_dir)
+        options = material_options(reports)
+        return options if options != (previous_options or []) else no_update
+
     @app.callback(
         Output('warnings', 'children'), Output('cards', 'children'), Output('events-list', 'children'),
         *[Output(graph_id, 'figure') for graph_id in GRAPH_IDS],
@@ -306,10 +368,12 @@ def create_app(export_dir=DEFAULT_EXPORT):
         Output('energy-sources', 'children'), Output('oxygen-sources', 'children'), Output('materials-table', 'children'),
         Input('revision-store', 'data'), Input('range', 'value'), Input('reset-follow', 'n_clicks'),
         *[Input(graph_id, 'relayoutData') for graph_id in GRAPH_IDS],
+        Input('material-filter', 'value'),
         State('manual-graphs', 'data'), State('reset-count', 'data'), State('zoom-ranges', 'data'),
     )
     def redraw(_file_revision, span, reset_clicks, *args):
         relayout = args[:len(GRAPH_IDS)]
+        selected_materials = args[-4]
         manual_graphs = set(args[-3] or [])
         reset_count = int(args[-2] or 0)
         zoom_ranges = dict(args[-1] or {})
@@ -332,7 +396,7 @@ def create_app(export_dir=DEFAULT_EXPORT):
         reports, warnings = load_reports(export_dir)
         frame = calculate(reports)
         visible_frame = frame if span == 'all' else frame.tail(30)
-        figures, stress_stats, pressure = build_figures(reports, span, manual_graphs, reset_count, zoom_ranges)
+        figures, stress_stats, pressure = build_figures(reports, span, manual_graphs, reset_count, zoom_ranges, selected_materials)
         event_list = events(reports)
         latest_cycle = reports[-1]['Cycle'] if reports else 0
         recent_events = [event for event in event_list if event['cycle'] >= latest_cycle - 9]
@@ -370,10 +434,13 @@ def create_app(export_dir=DEFAULT_EXPORT):
             scale = 1000 if unit == 'kJ' else 1
             return html.Div([html.H3(title), html.Ul([html.Li(f'{name}: {format_brazilian(value / scale)} {unit}') for name, value in rows] or [html.Li('sem dados de fonte')])])
         material_rows = []
-        labels = [('Algae', 'Algae'), ('Coal', 'Carbon'), ('Copper Ore', 'Cuprite'), ('Copper', 'Copper'), ('Gold Amalgam', 'GoldAmalgam'), ('Iron Ore', 'IronOre'), ('Iron', 'Iron')]
+        _options, canonical_names, _colors = _material_data(reports)
+        labels = [(label, tag) for tag, label in canonical_names.items()]
+        labels.sort(key=lambda pair: (pair[0].casefold(), pair[1]))
+        labels = [pair for pair in labels if selected_materials and pair[1] in selected_materials]
         if isinstance(latest_metrics.get('materials') if latest_metrics is not None else None, dict):
-            material_rows = [html.Tr([html.Td(label), html.Td(format_brazilian(latest_metrics['materials'].get(tag, 0))), html.Td(format_brazilian(latest_metrics.get(f'material_{label}_change') or 0)), html.Td(format_brazilian(latest_metrics.get(f'material_{label}_average_10') or 0))]) for label, tag in labels]
-        materials_table = html.Table([html.Thead(html.Tr([html.Th('Material'), html.Th('Disponível (kg)'), html.Th('Variação no ciclo'), html.Th('Média/ciclo (10 ciclos)')])), html.Tbody(material_rows)]) if material_rows else html.Div('aguardando atualização do mod')
+            material_rows = [html.Tr([html.Td(label), html.Td(format_brazilian(latest_metrics['materials'].get(tag, 0))), html.Td(format_brazilian(latest_metrics.get(f'material_tag_{tag}_change') or 0)), html.Td(format_brazilian(latest_metrics.get(f'material_tag_{tag}_average_10') or 0))]) for label, tag in labels]
+        materials_table = html.Table([html.Thead(html.Tr([html.Th('Material'), html.Th('Disponível (kg)'), html.Th('Variação no ciclo'), html.Th('Média/ciclo (10 ciclos)')])), html.Tbody(material_rows)]) if material_rows else html.Div('Selecione materiais na lista' if not selected_materials else 'aguardando atualização do mod')
         event_items = [html.Li(f'Ciclo {event["cycle"]}: {event["text"]}') for event in event_list] or [html.Li('Nenhum evento nos relatórios carregados.')]
         return (
             [html.Div(message) for message in warnings], cards, event_items,

@@ -1,4 +1,5 @@
 import json
+import copy
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import shutil
@@ -10,7 +11,7 @@ import time
 import pytest
 from urllib.request import urlopen
 
-from oni_dashboard.app import (DEFAULT_EXPORT, apply_x_range, build_figures, create_app,
+from oni_dashboard.app import (DEFAULT_EXPORT, MATERIAL_DEFAULTS, apply_x_range, build_figures, create_app, material_options,
                                default_export_dir, extract_x_range, format_brazilian,
                                is_user_zoom, _format_status)
 from oni_dashboard.load import load_reports
@@ -146,8 +147,9 @@ def test_unknown_json_fields_are_ignored(tmp_path):
 def test_layout_and_all_graphs_build_with_fixture_data():
     reports, _ = load_reports(FIXTURES)
     app = create_app(FIXTURES)
-    assert app.layout is not None
-    graphs = [component for component in app.layout._traverse()
+    layout = app.layout()
+    assert layout is not None
+    graphs = [component for component in layout._traverse()
               if component.__class__.__name__ == 'Graph']
     assert graphs
     assert all(isinstance(graph.style, dict)
@@ -278,6 +280,7 @@ def test_redraw_callback_preserves_manual_zoom_and_reset_follow_clears_it():
     def post(trigger, relayout=None):
         input_values = {
             'revision-store.data': None,
+            'material-filter.value': ['Algae', 'Carbon', 'Cuprite', 'Copper', 'GoldAmalgam', 'IronOre', 'Iron'],
             'range.value': '30',
             'reset-follow.n_clicks': 1 if trigger == 'reset-follow.n_clicks' else 0,
             'food.relayoutData': None,
@@ -311,6 +314,12 @@ def test_redraw_callback_preserves_manual_zoom_and_reset_follow_clears_it():
     assert response.status_code == 200
     oxygen = response.get_json()['response']['oxygen']['figure']
     assert oxygen['layout']['xaxis']['range'] == selected_range
+
+    response = post('material-filter.value')
+    assert response.status_code == 200
+    result = response.get_json()['response']
+    assert result['manual-graphs']['data'] == ['oxygen']
+    assert result['zoom-ranges']['data'] == {'oxygen': selected_range}
 
     response = post('reset-follow.n_clicks')
     assert response.status_code == 200
@@ -433,6 +442,7 @@ def test_real_redraw_post_v2_and_materials_zoom():
     callback_key, callback = next((key, value) for key, value in app.callback_map.items() if value['callback'].__name__ == 'redraw')
     def post(trigger, zoom=None):
         values = {'revision-store.data':None, 'range.value':'30', 'reset-follow.n_clicks':0,
+                  'material-filter.value':['Algae','Carbon','Cuprite','Copper','GoldAmalgam','IronOre','Iron'],
                   **{f'{graph}.relayoutData': ({'xaxis.range':[254,256]} if graph == 'materials' and zoom else None)
                      for graph in ('food','food-stock','oxygen','energy','materials','stress')}}
         inputs = [{**item,'value':values[f"{item['id']}.{item['property']}"]} for item in callback['inputs']]
@@ -446,6 +456,89 @@ def test_real_redraw_post_v2_and_materials_zoom():
         assert len(payload['cards']['children']) == 5
         assert payload['materials']['figure']['data']
         if zoom: assert payload['materials']['figure']['layout']['xaxis']['range'] == [254,256]
+
+
+def test_material_filter_options_and_selection_behaviour(tmp_path):
+    reports, _ = load_reports(FIXTURES_V2)
+    generated = []
+    for report in reports:
+        copied = copy.deepcopy(report)
+        copied['SchemaVersion'] = 3
+        copied.setdefault('Snapshot', {}).setdefault('Worlds', [{}])[0].setdefault('Materials', []).append(
+            {'Tag': 'Zinc', 'Name': 'Zinco', 'Kg': 4})
+        generated.append(copied)
+    generated_dir = tmp_path / 'generated-v3'
+    generated_dir.mkdir()
+    for report in generated:
+        serializable = {key: value for key, value in report.items() if not key.startswith('_')}
+        (generated_dir / f"report_cycle_{report['Cycle']}.json").write_text(
+            json.dumps(serializable, ensure_ascii=False, default=lambda value: value.isoformat()), encoding='utf-8')
+    generated, _ = load_reports(generated_dir)
+    assert next(option for option in material_options(generated) if option['value'] == 'Zinc') == {'label': 'Zinco', 'value': 'Zinc'}
+    # Name beats fallback; fallback beats the raw tag.
+    carbon = next(item for item in generated[-1]['Snapshot']['Worlds'][0]['Materials'] if item.get('Tag') == 'Carbon')
+    carbon['Name'] = 'Carvão refinado'
+    assert next(item for item in material_options(generated) if item['value'] == 'Carbon')['label'] == 'Carvão refinado'
+    assert next(item for item in material_options([{'Snapshot': {'Worlds': [{'Materials': [{'Tag': 'Carbon'}]}]}}]) if item['value'] == 'Carbon')['label'] == 'Coal'
+    assert next(item for item in material_options([{'Snapshot': {'Worlds': [{'Materials': [{'Tag': 'Zzz'}]}]}}]) if item['value'] == 'Zzz')['label'] == 'Zzz'
+
+    old = copy.deepcopy(reports)
+    tag = 'Zinc'
+    for report in old:
+        report['SchemaVersion'] = 2
+    old[-1].setdefault('Snapshot', {}).setdefault('Worlds', [{}])[0].setdefault('Materials', []).append({'Tag': tag, 'Kg': 5})
+    old[0].setdefault('Snapshot', {}).setdefault('Worlds', [{}])[0].setdefault('Materials', [])
+    old[0]['Snapshot']['Worlds'][0]['Materials'] = [m for m in old[0]['Snapshot']['Worlds'][0]['Materials'] if m.get('Tag') != tag]
+    current = copy.deepcopy(old)
+    current[0]['SchemaVersion'] = 3
+    assert calculate(old).iloc[0][f'material_tag_{tag}'] != calculate(old).iloc[0][f'material_tag_{tag}']
+    assert calculate(current).iloc[0][f'material_tag_{tag}'] == 0
+
+    figures, _, _ = build_figures(generated, selected_materials=['Zinc'])
+    assert [trace.meta['tag'] for trace in figures['materials'].data] == ['Zinc']
+    empty, _, _ = build_figures(generated, selected_materials=[])
+    assert not empty['materials'].data
+    assert empty['materials'].layout.annotations[0].text == 'Selecione materiais na lista'
+    both, _, _ = build_figures(generated, selected_materials=['Zinc', 'Carbon'])
+    zinc_alone, _, _ = build_figures(generated, selected_materials=['Zinc'])
+    assert next(trace for trace in both['materials'].data if trace.meta['tag'] == 'Zinc').line.color == zinc_alone['materials'].data[0].line.color
+    defaults_figure, _, _ = build_figures(generated)
+    default_colors = [next(trace for trace in defaults_figure['materials'].data if trace.meta['tag'] == tag).line.color for tag in MATERIAL_DEFAULTS]
+    assert len(set(default_colors)) == len(MATERIAL_DEFAULTS)
+    with_other, _, _ = build_figures(generated, selected_materials=['Algae', 'Zinc'])
+    algae_alone, _, _ = build_figures(generated, selected_materials=['Algae'])
+    assert next(trace for trace in with_other['materials'].data if trace.meta['tag'] == 'Algae').line.color == algae_alone['materials'].data[0].line.color
+
+
+def test_material_dropdown_options_callback_no_update_and_layout_props():
+    app = create_app(FIXTURES_V2)
+    layout = app.layout()
+    dropdown = layout.children[14].children[1]
+    assert dropdown.id == 'material-filter' and dropdown.multi and dropdown.searchable
+    assert dropdown.persistence and dropdown.persistence_type == 'local'
+    assert set(MATERIAL_DEFAULTS).issubset({option['value'] for option in dropdown.options})
+    from dash.dcc import Dropdown
+    valid_label_keys = set(Dropdown.Labels.__annotations__)
+    assert set(dropdown.labels) <= valid_label_keys
+    assert dropdown.labels == {
+        'select_all': 'Selecionar todos',
+        'deselect_all': 'Limpar sele\u00e7\u00e3o',
+        'selected_count': '{num_selected} selecionados',
+        'search': 'Pesquisar',
+        'clear_search': 'Limpar pesquisa',
+        'clear_selection': 'Limpar sele\u00e7\u00e3o',
+        'no_options_found': 'Nenhum material encontrado',
+    }
+    key, callback = next((key, item) for key, item in app.callback_map.items() if item['callback'].__name__ == 'update_material_options')
+    options = material_options(load_reports(FIXTURES_V2)[0])
+    response = app.server.test_client().post('/_dash-update-component', json={
+        'output': key, 'outputs': {'id': 'material-filter', 'property': 'options'},
+        'inputs': [{'id': 'revision-store', 'property': 'data', 'value': []}],
+        'state': [{'id': 'material-filter', 'property': 'options', 'value': options}],
+        'changedPropIds': ['revision-store.data'],
+    })
+    assert response.status_code == 200
+    assert response.get_json()['response'] == {}
 
 
 def test_edge_resolution_uses_program_files_fallback_and_webbrowser(tmp_path, monkeypatch):

@@ -20,7 +20,7 @@ Este é o relato de um único projeto, não uma medição controlada.
 3. O Claude revisou o diff, repetiu os testes e testou no navegador. Quando reprovava, mandava correções numeradas.
 4. A pessoa comparou os números com o jogo e decidiu quando seguir.
 
-Foram 5 ciclos de correção na Fase 1 e 4 na Fase 3. A correção para a publicação levou mais 2.
+Foram 5 ciclos de correção na Fase 1 e 4 na Fase 3. A correção para a publicação levou mais 2, e o filtro de materiais, 3 rodadas.
 
 ## O que cada um encontrou
 
@@ -31,6 +31,9 @@ Foram 5 ciclos de correção na Fase 1 e 4 na Fase 3. A correção para a public
 | Altura dos gráficos removida ao reescrever o layout | Sim | Claude, no navegador |
 | `--open` travava com `pythonw`, e a janela nunca abria | Sim | Claude, rodando de verdade |
 | Identificador errado da pasta Documentos: a API falhava em silêncio e o caminho alternativo escondia o erro | Sim | Claude, conferindo o caminho calculado |
+| Filtro de materiais abria vazio e apagava a seleção salva, porque a lista começava sem opções | Sim | Claude, no navegador |
+| Filtro quase ilegível e em inglês: o CSS e os textos usavam nomes que não existem nesta versão do Dash | Sim | Claude, no navegador |
+| Filtro limitado aos 7 materiais do teste, porque o mod só exportava esses | Não se aplica | Claude, lendo o código do mod antes de escrever a especificação |
 | Diferença de 4% nos minérios, que parecia defeito | Não se aplica | A pessoa: o painel mostra o Disponível, e o print comparado mostrava o Total. Não havia defeito |
 | Ciclo errado na especificação: dizia que um duplicante saiu no 247, mas foi no 248 | Não se aplica | Corrigido durante o trabalho: o erro era do orquestrador |
 

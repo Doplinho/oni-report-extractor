@@ -45,7 +45,8 @@ def calculate(reports):
         materials = {}
         for world in worlds:
             for item in world.get('Materials', []):
-                materials[item.get('Tag')] = materials.get(item.get('Tag'), 0) + float(item.get('Kg', 0) or 0)
+                tag = item.get('Tag')
+                materials[tag] = materials.get(tag, 0) + float(item.get('Kg', 0) or 0)
         stress = {item.get('Name'): float(item.get('Stress', 0) or 0) for item in (snapshot.get('Duplicants') or [])}
         rows.append({
             'cycle': int(report['Cycle']),
@@ -67,6 +68,7 @@ def calculate(reports):
             'energy_stored_kj': stored,
             'energy_capacity_kj': capacity,
             'materials': materials if snapshot else None,
+            'schema_version': int(report.get('SchemaVersion', 1) or 1),
             'duplicant_stress': stress if snapshot else None,
             'snapshot_errors': snapshot.get('Errors') or [],
         })
@@ -86,12 +88,19 @@ def calculate(reports):
         if pd.notna(row['food_stock_kcal']) and row['food_stock_kcal'] > 0 and row['food_consumption_average_10'] > 0 else None,
         axis=1,
     )
-    material_names = {'Algae': 'Algae', 'Carbon': 'Coal', 'Cuprite': 'Copper Ore', 'Copper': 'Copper',
-                      'GoldAmalgam': 'Gold Amalgam', 'IronOre': 'Iron Ore', 'Iron': 'Iron'}
-    for tag, name in material_names.items():
-        frame[f'material_{name}'] = pd.to_numeric(frame['materials'].map(lambda values: values.get(tag) if isinstance(values, dict) else float('nan')), errors='coerce')
-        frame[f'material_{name}_change'] = frame[f'material_{name}'].diff()
-        frame[f'material_{name}_average_10'] = frame[f'material_{name}_change'].rolling(10, min_periods=1).mean()
+    tags = sorted({'Algae', 'Carbon', 'Cuprite', 'Copper', 'GoldAmalgam', 'IronOre', 'Iron'} |
+                  {tag for materials in frame['materials'] if isinstance(materials, dict) for tag in materials if tag})
+    for tag in tags:
+        column = f'material_tag_{tag}'
+        values = []
+        for materials, schema in zip(frame['materials'], frame['schema_version']):
+            if isinstance(materials, dict) and tag in materials:
+                values.append(materials[tag])
+            else:
+                values.append(0 if schema >= 3 and isinstance(materials, dict) else float('nan'))
+        frame[column] = pd.to_numeric(pd.Series(values, index=frame.index), errors='coerce')
+        frame[f'{column}_change'] = frame[column].diff()
+        frame[f'{column}_average_10'] = frame[f'{column}_change'].rolling(10, min_periods=1).mean()
     return frame
 
 

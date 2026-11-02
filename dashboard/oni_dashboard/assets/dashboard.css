@@ -20,5 +20,17 @@ body { margin: 0; background: #111827; color: #e5e7eb; }
 .range-control label { color: #e5e7eb; }
 .range-control input { accent-color: #60a5fa; }
 button { border: 1px solid #60a5fa; border-radius: 6px; padding: 8px 12px; color: #eff6ff; background: #1d4ed8; }
+#material-filter {
+  --Dash-Fill-Inverse-Strong: #273449;
+  --Dash-Fill-Interactive-Strong: #60a5fa;
+  --Dash-Fill-Interactive-Weak: #374b66;
+  --Dash-Text-Strong: #e5e7eb;
+  --Dash-Text-Primary: #e5e7eb;
+  --Dash-Text-Weak: #e5e7eb;
+  --Dash-Text-Disabled: #aebbd0;
+  --Dash-Stroke-Strong: #52647d;
+  --Dash-Stroke-Weak: #52647d;
+  color: #e5e7eb;
+}
 li { margin: 6px 0; overflow-wrap: anywhere; }
 @media (max-width: 539px) { .dashboard { min-width: 0; padding: 8px; } }

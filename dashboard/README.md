@@ -43,6 +43,8 @@ Estes pontos foram comparados com a tela do jogo:
 
 O saldo real de energia é `EnergyCreated.Net + EnergyWasted.Net`. Ele bateu com a variação da bateria nas 2 amostras conferidas, o que apoia a regra, mas não é uma prova.
 
+No painel de materiais, use **Materiais no gráfico** para pesquisar e escolher os recursos disponíveis nos relatórios da colônia. A seleção é salva localmente no navegador e é compartilhada pelo gráfico e pela tabela.
+
 ## Testes
 
 ```powershell

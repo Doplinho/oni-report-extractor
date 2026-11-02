@@ -81,6 +81,7 @@ namespace OniReportExtractor
     public class MaterialDto
     {
         public string Tag { get; set; }
+        public string Name { get; set; }
         public float Kg { get; set; }
     }
 
@@ -104,7 +105,7 @@ namespace OniReportExtractor
                 if (dailyReport == null) return;
 
                 CycleReportDto dto = new CycleReportDto();
-                dto.SchemaVersion = 2;
+                dto.SchemaVersion = 3;
                 dto.Cycle = dailyReport.day;
                 dto.Timestamp = System.DateTime.Now.ToString("o");
                 List<string> noteErrors = new List<string>();
@@ -251,15 +252,41 @@ namespace OniReportExtractor
         {
             SimHashes[] hashes = { SimHashes.Algae, SimHashes.Carbon, SimHashes.Cuprite, SimHashes.Copper,
                 SimHashes.GoldAmalgam, SimHashes.IronOre, SimHashes.Iron };
-            foreach (SimHashes hash in hashes)
+            Dictionary<string, Tag> tags = new Dictionary<string, Tag>();
+            foreach (SimHashes hash in hashes) tags[hash.ToString()] = hash.CreateTag();
+            try
             {
+                foreach (Tag tag in DiscoveredResources.Instance.GetDiscovered())
+                {
+                    try
+                    {
+                        string key = tag.ToString();
+                        float amount = world.worldInventory.GetAmount(tag, false);
+                        if (amount > 0 && !tags.ContainsKey(key)) tags[key] = tag;
+                    }
+                    catch (Exception ex) { errors.Add("World " + world.id + " recurso descoberto: " + ex.Message); }
+                }
+            }
+            catch (Exception ex) { errors.Add("World " + world.id + " lista de recursos descobertos: " + ex.Message); }
+
+            foreach (KeyValuePair<string, Tag> pair in tags)
                 try
                 {
-                    float amount = world.worldInventory.GetAmount(hash.CreateTag(), false);
-                    item.Materials.Add(new MaterialDto { Tag = hash.ToString(), Kg = amount });
+                    float amount = world.worldInventory.GetAmount(pair.Value, false);
+                    item.Materials.Add(new MaterialDto { Tag = pair.Key, Name = MaterialName(pair.Value, errors), Kg = amount });
                 }
-                catch (Exception ex) { errors.Add("World " + world.id + " material " + hash + ": " + ex.Message); }
+                catch (Exception ex) { errors.Add("World " + world.id + " material " + pair.Key + ": " + ex.Message); }
+        }
+
+        private static string MaterialName(Tag tag, List<string> errors)
+        {
+            try
+            {
+                string name = TagManager.GetProperName(tag, true);
+                if (!String.IsNullOrEmpty(name)) return name;
             }
+            catch (Exception ex) { errors.Add("Nome do material " + tag + ": " + ex.Message); }
+            return tag.ToString();
         }
     }
 
