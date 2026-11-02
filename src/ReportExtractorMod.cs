@@ -82,6 +82,8 @@ namespace OniReportExtractor
     {
         public string Tag { get; set; }
         public string Name { get; set; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string Unit { get; set; }
         public float Kg { get; set; }
     }
 
@@ -250,6 +252,7 @@ namespace OniReportExtractor
 
         private static void AddMaterials(WorldSnapshotDto item, WorldContainer world, List<string> errors)
         {
+            HashSet<Tag> unitTags = MaterialUnitTags(errors);
             SimHashes[] hashes = { SimHashes.Algae, SimHashes.Carbon, SimHashes.Cuprite, SimHashes.Copper,
                 SimHashes.GoldAmalgam, SimHashes.IronOre, SimHashes.Iron };
             Dictionary<string, Tag> tags = new Dictionary<string, Tag>();
@@ -273,7 +276,7 @@ namespace OniReportExtractor
                 try
                 {
                     float amount = world.worldInventory.GetAmount(pair.Value, false);
-                    item.Materials.Add(new MaterialDto { Tag = pair.Key, Name = MaterialName(pair.Value, errors), Kg = amount });
+                    item.Materials.Add(new MaterialDto { Tag = pair.Key, Name = MaterialName(pair.Value, errors), Unit = MaterialUnit(pair.Value, unitTags, errors), Kg = amount });
                 }
                 catch (Exception ex) { errors.Add("World " + world.id + " material " + pair.Key + ": " + ex.Message); }
         }
@@ -287,6 +290,34 @@ namespace OniReportExtractor
             }
             catch (Exception ex) { errors.Add("Nome do material " + tag + ": " + ex.Message); }
             return tag.ToString();
+        }
+
+        private static HashSet<Tag> MaterialUnitTags(List<string> errors)
+        {
+            HashSet<Tag> tags = new HashSet<Tag>();
+            try
+            {
+                foreach (Tag category in GameTags.UnitCategories)
+                    foreach (Tag tag in DiscoveredResources.Instance.GetDiscoveredResourcesFromTag(category)) tags.Add(tag);
+                foreach (Tag category in GameTags.CalorieCategories)
+                    foreach (Tag tag in DiscoveredResources.Instance.GetDiscoveredResourcesFromTag(category)) tags.Add(tag);
+            }
+            catch (Exception ex) { errors.Add("Categorias de unidade dos materiais: " + ex.Message); }
+            return tags;
+        }
+
+        private static string MaterialUnit(Tag tag, HashSet<Tag> unitTags, List<string> errors)
+        {
+            try
+            {
+                if (ElementLoader.GetElement(tag) != null) return "kg";
+                return unitTags.Contains(tag) ? "un" : "kg";
+            }
+            catch (Exception ex)
+            {
+                errors.Add("Unidade do material " + tag + ": " + ex.Message);
+                return "kg";
+            }
         }
     }
 

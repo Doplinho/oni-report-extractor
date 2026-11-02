@@ -541,6 +541,78 @@ def test_material_dropdown_options_callback_no_update_and_layout_props():
     assert response.get_json()['response'] == {}
 
 
+def test_material_units_axes_legend_and_table():
+    reports, _ = load_reports(FIXTURES_V2)
+    reports = reports[-1:]
+    report = copy.deepcopy(reports[0])
+    report['SchemaVersion'] = 3
+    materials = report.setdefault('Snapshot', {}).setdefault('Worlds', [{}])[0].setdefault('Materials', [])
+    materials.extend([
+        {'Tag': 'AtmoSuit', 'Name': 'Atmo Suit', 'Kg': 5, 'Unit': 'un'},
+        {'Tag': 'MealwoodSeed', 'Name': 'Mealwood Seed', 'Kg': 1.077, 'Unit': 'un'},
+        {'Tag': 'Copper', 'Name': 'Copper', 'Kg': 12, 'Unit': 'kg'},
+    ])
+    frame = calculate([report])
+    assert 'material_units' not in frame.columns
+    no_unit = copy.deepcopy(report)
+    del no_unit['Snapshot']['Worlds'][0]['Materials'][-3]['Unit']
+    assert 'material_units' not in calculate([no_unit]).columns
+
+    both, _, _ = build_figures([report], selected_materials=['AtmoSuit', 'Copper'])
+    figure = both['materials']
+    assert figure.layout.yaxis2.title.text == 'unidades'
+    assert figure.layout.yaxis2.overlaying == 'y' and figure.layout.yaxis2.side == 'right'
+    assert {trace.meta['tag']: trace.yaxis for trace in figure.data} == {'AtmoSuit': 'y2', 'Copper': 'y'}
+    assert next(trace for trace in figure.data if trace.meta['tag'] == 'AtmoSuit').name == 'Atmo Suit (un)'
+    kg_only, _, _ = build_figures([report], selected_materials=['Copper'])
+    assert 'yaxis2' not in kg_only['materials'].layout
+    un_only, _, _ = build_figures([report], selected_materials=['AtmoSuit'])
+    assert un_only['materials'].data[0].yaxis == 'y2'
+
+    app = create_app(FIXTURES_V2)
+    layout = app.layout()
+    dropdown = layout.children[14].children[1]
+    assert dropdown.id == 'material-filter'
+
+
+def test_material_table_keeps_unit_from_earlier_report_when_missing_latest(monkeypatch):
+    reports, _ = load_reports(FIXTURES_V2)
+    earlier = copy.deepcopy(reports[-2])
+    latest = copy.deepcopy(reports[-1])
+    earlier['SchemaVersion'] = latest['SchemaVersion'] = 3
+    earlier.setdefault('Snapshot', {}).setdefault('Worlds', [{}])[0].setdefault('Materials', []).append(
+        {'Tag': 'AtmoSuit', 'Name': 'Atmo Suit', 'Kg': 5, 'Unit': 'un'}
+    )
+    latest['Snapshot']['Worlds'][0]['Materials'] = [
+        item for item in latest['Snapshot']['Worlds'][0].get('Materials', [])
+        if item.get('Tag') != 'AtmoSuit'
+    ]
+    monkeypatch.setattr('oni_dashboard.app.load_reports', lambda _path: ([earlier, latest], []))
+    app = create_app(FIXTURES_V2)
+    key, callback = next((key, item) for key, item in app.callback_map.items()
+                         if item['callback'].__name__ == 'redraw')
+    inputs = []
+    for item in callback['inputs']:
+        if item['id'] == 'material-filter': value = ['AtmoSuit']
+        elif item['id'] == 'range': value = 'all'
+        elif item['id'] == 'reset-follow': value = 0
+        elif item['id'] == 'revision-store': value = None
+        else: value = None
+        inputs.append({**item, 'value': value})
+    states = [{**item, 'value': [] if item['id'] == 'manual-graphs' else 0 if item['id'] == 'reset-count' else {}}
+              for item in callback['state']]
+    outputs = [{'id': output.component_id, 'property': output.component_property} for output in callback['output']]
+    response = app.server.test_client().post('/_dash-update-component', json={
+        'output': key, 'outputs': outputs, 'inputs': inputs, 'state': states,
+        'changedPropIds': ['material-filter.value'],
+    })
+    assert response.status_code == 200
+    table = response.get_json()['response']['materials-table']['children']
+    rows = table['props']['children'][1]['props']['children']
+    atmo_row = next(row for row in rows if row['props']['children'][0]['props']['children'] == 'Atmo Suit')
+    assert atmo_row['props']['children'][2]['props']['children'] == 'un'
+
+
 def test_edge_resolution_uses_program_files_fallback_and_webbrowser(tmp_path, monkeypatch):
     import os, sys
     edge = tmp_path / 'Microsoft' / 'Edge' / 'Application' / 'msedge.exe'; edge.parent.mkdir(parents=True); edge.touch()

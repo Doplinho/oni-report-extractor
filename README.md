@@ -16,7 +16,7 @@ Mod e dashboard para **Oxygen Not Included**. O mod exporta o relatório de cada
 
 ## Como o mod funciona
 
-Um patch Harmony em `ReportManager.OnNightTime` lê o relatório do ciclo recém-fechado e grava `report_cycle_N.json`. O formato mantém `Cycle`, `Timestamp` e `Entries` com os nomes e significados existentes. A versão 2 acrescenta `SchemaVersion`, identificação da colônia e `Snapshot`, com calorias brutas, baterias e estresse dos duplicantes por mundo. A versão 3 inclui `Name` e todos os recursos descobertos com quantidade maior que 0, além dos sete materiais fixos. Leituras parciais que falham são descritas em `Snapshot.Errors`.
+Um patch Harmony em `ReportManager.OnNightTime` lê o relatório do ciclo recém-fechado e grava `report_cycle_N.json`. O formato mantém `Cycle`, `Timestamp` e `Entries` com os nomes e significados existentes. A versão 2 acrescenta `SchemaVersion`, identificação da colônia e `Snapshot`, com calorias brutas, baterias e estresse dos duplicantes por mundo. A versão 3 inclui `Name`, `Unit` (`kg` ou `un`, para itens contados como sementes, comida e trajes) e todos os recursos descobertos com quantidade maior que 0, além dos sete materiais fixos. Em itens `un`, o campo `Kg` traz a contagem. Leituras parciais que falham são descritas em `Snapshot.Errors`.
 
 O arquivo é gravado em UTF-8 com troca atômica. O caminho principal é:
 

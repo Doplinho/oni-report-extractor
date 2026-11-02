@@ -48,3 +48,26 @@ Testes novos, com relatórios v3 gerados em `tmp_path` a partir das fixtures:
 - o dropdown tem `searchable`, `multi` e `persistence` no layout.
 
 Antes de terminar: rode `C:\oni-dashboard\.venv\Scripts\python.exe -m pytest -q` a partir de `dashboard/` e `.\build.ps1` na raiz. Informe os dois resultados literais e a API usada na Parte 1. Diga o que não pôde verificar.
+
+## Parte 3: unidade dos itens
+
+O relatório real do ciclo 270 trouxe sementes, comida e trajes em `Kg` (Atmo Suit = 5, Mealwood Seed = 1.077). Esses números parecem ser contagens, mas a tela diz kg.
+
+### Mod
+
+1. `MaterialDto` ganha `Unit`, com `"kg"` ou `"un"`.
+2. A regra deve ser a mesma do jogo na tela de Recursos. Procure nas DLLs o que ele usa, como `GameTags.DisplayAsUnits`, `GameTags.UnitCategories`, `GameTags.MaterialCategories`, `GameTags.CalorieCategories` e `DiscoveredResources.Instance.GetCategoryForTag(tag)`. **Nomes vêm de memória: valide compilando, com chamadas diretas, sem reflexão.** Elementos são sempre `"kg"`. Itens da categoria de comida ficam `"un"`, sem converter para kcal.
+3. Se não conseguir determinar a unidade, registre em `Snapshot.Errors` e use `"kg"`. Essa falha não pode impedir a exportação do material.
+4. `SchemaVersion` continua 3: o campo é opcional, e a ausência dele significa `"kg"`.
+
+### Dashboard
+
+1. Use o `Unit` mais recente de cada tag, no mesmo helper dos nomes. Sem `Unit`, vale `"kg"`.
+2. **Tabela:** a coluna passa a ser "Disponível" e ganha a coluna "Unidade". As colunas de variação continuam sem unidade própria.
+3. **Gráfico:** itens em `"kg"` usam o eixo da esquerda, com título `kg`. Itens em `"un"` usam um eixo à direita, com título `unidades`, sobreposto (`yaxis2`, `overlaying='y'`, `side='right'`). Com só itens `"un"` selecionados, continuam no eixo da direita. O eixo da direita só existe se houver item `"un"` selecionado.
+4. **Legenda:** itens em `"un"` aparecem como `Nome (un)`. A lista de seleção não muda.
+5. Zoom, seguir o último ciclo, cores e seleção não podem mudar de comportamento.
+
+### Critérios de aceite
+
+Testes novos: `Unit` mais recente vale; ausência vale `"kg"`; `kg` e `un` selecionados geram dois eixos com cada trace no eixo certo; só `kg` não cria `yaxis2`; a tabela mostra a unidade; a legenda usa `(un)`.

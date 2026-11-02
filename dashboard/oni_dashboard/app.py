@@ -106,8 +106,8 @@ def material_options(reports):
 
 
 def _material_data(reports):
-    """Build the shared material names, options, and stable color assignments."""
-    names, tags = {}, set(MATERIAL_DEFAULTS)
+    """Build shared material names, units, options, and stable color assignments."""
+    names, units, tags = {}, {}, set(MATERIAL_DEFAULTS)
     for report in reports:
         for world in ((report.get('Snapshot') or {}).get('Worlds') or []):
             for item in world.get('Materials') or []:
@@ -116,6 +116,7 @@ def _material_data(reports):
                     tags.add(tag)
                     if item.get('Name'):
                         names[tag] = item['Name']
+                    units[tag] = item.get('Unit') if item.get('Unit') in ('kg', 'un') else 'kg'
     options = [{'label': names.get(tag) or MATERIAL_FALLBACK_NAMES.get(tag) or tag, 'value': tag} for tag in tags]
     options = sorted(options, key=lambda option: (option['label'].casefold(), option['value']))
     by_tag = {option['value']: option['label'] for option in options}
@@ -127,7 +128,7 @@ def _material_data(reports):
                 if tag and tag not in ordered:
                     ordered.append(tag)
     colors = {tag: MATERIAL_COLORS[index % len(MATERIAL_COLORS)] for index, tag in enumerate(ordered)}
-    return options, by_tag, colors
+    return options, by_tag, colors, units
 
 
 def build_figures(reports, span='30', manual_graphs=(), reset_count=0, zoom_ranges=None, selected_materials=None):
@@ -192,14 +193,20 @@ def build_figures(reports, span='30', manual_graphs=(), reset_count=0, zoom_rang
     materials = go.Figure()
     selected_materials = MATERIAL_DEFAULTS if selected_materials is None else set(selected_materials)
     available_tags = sorted(set(MATERIAL_DEFAULTS) | ({tag for values in frame['materials'] if isinstance(values, dict) for tag in values} if not frame.empty else set()))
-    _options, name_by_tag, colors = _material_data(reports)
+    _options, name_by_tag, colors, unit_by_tag = _material_data(reports)
+    has_units = False
     for tag in available_tags:
         if tag not in selected_materials:
             continue
         column = f'material_tag_{tag}'
         if column in visible:
-            materials.add_scatter(x=visible['cycle'], y=visible[column], mode='lines+markers', name=name_by_tag.get(tag) or MATERIAL_FALLBACK_NAMES.get(tag, tag), line={'color': colors[tag]}, meta={'tag': tag})
+            unit = unit_by_tag.get(tag, 'kg')
+            if unit == 'un':
+                has_units = True
+            materials.add_scatter(x=visible['cycle'], y=visible[column], mode='lines+markers', name=(name_by_tag.get(tag) or MATERIAL_FALLBACK_NAMES.get(tag, tag)) + (' (un)' if unit == 'un' else ''), line={'color': colors[tag]}, meta={'tag': tag}, yaxis='y2' if unit == 'un' else 'y')
     materials.update_layout(title='Materiais disponíveis', yaxis_title='kg')
+    if has_units:
+        materials.update_layout(yaxis2={'title': 'unidades', 'overlaying': 'y', 'side': 'right'})
     if not selected_materials:
         materials.add_annotation(text='Selecione materiais na lista', xref='paper', yref='paper', x=.5, y=.5, showarrow=False, font={'size': 16})
     figures['materials'] = _figure_style(materials, 'materials', 'materials' not in following, last_cycle, span, reset_count, (zoom_ranges or {}).get('materials'))
@@ -434,13 +441,13 @@ def create_app(export_dir=DEFAULT_EXPORT):
             scale = 1000 if unit == 'kJ' else 1
             return html.Div([html.H3(title), html.Ul([html.Li(f'{name}: {format_brazilian(value / scale)} {unit}') for name, value in rows] or [html.Li('sem dados de fonte')])])
         material_rows = []
-        _options, canonical_names, _colors = _material_data(reports)
+        _options, canonical_names, _colors, _units = _material_data(reports)
         labels = [(label, tag) for tag, label in canonical_names.items()]
         labels.sort(key=lambda pair: (pair[0].casefold(), pair[1]))
         labels = [pair for pair in labels if selected_materials and pair[1] in selected_materials]
         if isinstance(latest_metrics.get('materials') if latest_metrics is not None else None, dict):
-            material_rows = [html.Tr([html.Td(label), html.Td(format_brazilian(latest_metrics['materials'].get(tag, 0))), html.Td(format_brazilian(latest_metrics.get(f'material_tag_{tag}_change') or 0)), html.Td(format_brazilian(latest_metrics.get(f'material_tag_{tag}_average_10') or 0))]) for label, tag in labels]
-        materials_table = html.Table([html.Thead(html.Tr([html.Th('Material'), html.Th('Disponível (kg)'), html.Th('Variação no ciclo'), html.Th('Média/ciclo (10 ciclos)')])), html.Tbody(material_rows)]) if material_rows else html.Div('Selecione materiais na lista' if not selected_materials else 'aguardando atualização do mod')
+            material_rows = [html.Tr([html.Td(label), html.Td(format_brazilian(latest_metrics['materials'].get(tag, 0))), html.Td(_units.get(tag, 'kg')), html.Td(format_brazilian(latest_metrics.get(f'material_tag_{tag}_change') or 0)), html.Td(format_brazilian(latest_metrics.get(f'material_tag_{tag}_average_10') or 0))]) for label, tag in labels]
+        materials_table = html.Table([html.Thead(html.Tr([html.Th('Material'), html.Th('Disponível'), html.Th('Unidade'), html.Th('Variação no ciclo'), html.Th('Média/ciclo (10 ciclos)')])), html.Tbody(material_rows)]) if material_rows else html.Div('Selecione materiais na lista' if not selected_materials else 'aguardando atualização do mod')
         event_items = [html.Li(f'Ciclo {event["cycle"]}: {event["text"]}') for event in event_list] or [html.Li('Nenhum evento nos relatórios carregados.')]
         return (
             [html.Div(message) for message in warnings], cards, event_items,

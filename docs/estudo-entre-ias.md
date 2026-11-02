@@ -34,6 +34,7 @@ Foram 5 ciclos de correção na Fase 1 e 4 na Fase 3. A correção para a public
 | Filtro de materiais abria vazio e apagava a seleção salva, porque a lista começava sem opções | Sim | Claude, no navegador |
 | Filtro quase ilegível e em inglês: o CSS e os textos usavam nomes que não existem nesta versão do Dash | Sim | Claude, no navegador |
 | Filtro limitado aos 7 materiais do teste, porque o mod só exportava esses | Não se aplica | Claude, lendo o código do mod antes de escrever a especificação |
+| Regra da unidade comparava um item com uma lista de categorias, e tudo sairia como kg | Sim | Claude, lendo o diff |
 | Diferença de 4% nos minérios, que parecia defeito | Não se aplica | A pessoa: o painel mostra o Disponível, e o print comparado mostrava o Total. Não havia defeito |
 | Ciclo errado na especificação: dizia que um duplicante saiu no 247, mas foi no 248 | Não se aplica | Corrigido durante o trabalho: o erro era do orquestrador |
 
