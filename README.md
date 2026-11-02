@@ -1,40 +1,39 @@
 # ONI Report Extractor
 
-Mod para **Oxygen Not Included** que exporta o relatório diário de cada ciclo (oxigênio, energia, calorias, estresse etc.) para JSON, para análise no Power BI, Excel ou Python.
-
-Testado na build **U59-744825**.
+Mod para **Oxygen Not Included** que exporta o relatório diário de cada ciclo para JSON, para análise no Power BI, Excel ou Python. Testado na build **U59-744825**.
 
 ## Como funciona
 
-Um patch Harmony em `ReportManager.OnNightTime` lê o relatório do ciclo recém-fechado (`ReportManager.Instance.YesterdaysReport`) e grava:
+Um patch Harmony em `ReportManager.OnNightTime` lê o relatório do ciclo recém-fechado e grava `report_cycle_N.json`. O formato mantém `Cycle`, `Timestamp` e `Entries` com os nomes e significados existentes. A versão 2 acrescenta `SchemaVersion`, identificação da colônia e `Snapshot`, com calorias brutas, baterias, sete materiais e estresse dos duplicantes por mundo. Leituras parciais que falham são descritas em `Snapshot.Errors`.
+
+O arquivo é gravado em UTF-8 com troca atômica. O caminho principal é:
 
 ```
-Documentos\Klei\OxygenNotIncluded\export\report_cycle_N.json
+Documentos\Klei\OxygenNotIncluded\export\colonies\<ColonyId>\report_cycle_N.json
 ```
 
-Cada categoria gera uma linha de total (`Context = null`) e linhas de detalhe por duplicante/construção (`Context` preenchido).
+Enquanto `WriteLegacyRoot` estiver habilitado, também é gravada uma cópia compatível em `Documentos\Klei\OxygenNotIncluded\export\report_cycle_N.json`, usada pelas ferramentas atuais.
 
-```json
-{
-  "Cycle": 10,
-  "Timestamp": "2026-10-31T20:00:00-03:00",
-  "Entries": [
-    { "Category": "OxygenCreated", "Context": null, "NetValue": 1.5, "PositiveValue": 3.0, "NegativeValue": -1.5 }
-  ]
-}
-```
+Cada categoria em `Entries` gera uma linha total (`Context = null`) e linhas de detalhe por duplicante/construção (`Context` preenchido). As categorias de energia criada, energia desperdiçada e oxigênio criado também podem incluir notas.
 
 ## Compilar e instalar
 
-Requer o jogo instalado (as DLLs de referência vêm de `OxygenNotIncluded_Data\Managed`) e o `csc.exe` do .NET Framework 4.x, que já vem no Windows.
+Requer o jogo instalado para as DLLs de referência em `OxygenNotIncluded_Data\Managed` e `csc.exe` do .NET Framework 4.x.
 
 ```powershell
+.\build.ps1
 .\build.ps1 -Install
 ```
 
-Isso compila `bin\OniExtract.dll` e copia o mod para `Documentos\Klei\OxygenNotIncluded\mods\dev\OniExtract\`. Se o jogo estiver em outro lugar, use `-Managed "<caminho>\OxygenNotIncluded_Data\Managed"`.
+`-Install` interrompe se `OxygenNotIncluded` estiver aberto. Antes de copiar os arquivos, guarda os arquivos instalados em `Documentos\Klei\OxygenNotIncluded\mods_backup\OniExtract-<yyyyMMdd-HHmmss>\` e, após instalar, mostra o SHA-256 da DLL. Para outra instalação do jogo, use `-Managed "<caminho>\OxygenNotIncluded_Data\Managed"`.
 
-Depois, ative **ONI Report Extractor** no menu Mods do jogo.
+Para restaurar os arquivos de um backup, com o jogo fechado:
+
+```powershell
+.\build.ps1 -Restore "<Documentos>\Klei\OxygenNotIncluded\mods_backup\OniExtract-<yyyyMMdd-HHmmss>"
+```
+
+A restauração copia `OniExtract.dll`, `mod.yaml` e `mod_info.yaml` para `mods\dev\OniExtract` e imprime o SHA-256 da DLL restaurada.
 
 ## Exportar para CSV
 
