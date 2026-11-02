@@ -1,0 +1,874 @@
+{
+  "Cycle": 216,
+  "Timestamp": "2026-11-01T19:23:56.0946063-03:00",
+  "Entries": [
+    {
+      "Category": "DuplicantHeader",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": null,
+      "NetValue": 8364245.0,
+      "PositiveValue": 1.72E+07,
+      "NegativeValue": -8835755.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Harvested",
+      "NetValue": 1.62E+07,
+      "PositiveValue": 1.62E+07,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Meep",
+      "NetValue": -1618798.5,
+      "PositiveValue": 0.0,
+      "NegativeValue": -1618798.5
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Abe",
+      "NetValue": -1978081.75,
+      "PositiveValue": 0.0,
+      "NegativeValue": -1978081.75
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Otto",
+      "NetValue": -250835.609,
+      "PositiveValue": 0.0,
+      "NegativeValue": -250835.609
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Hassan",
+      "NetValue": -1032499.25,
+      "PositiveValue": 0.0,
+      "NegativeValue": -1032499.25
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Marie",
+      "NetValue": -600000.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": -600000.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Ada",
+      "NetValue": -1555540.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": -1555540.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Butchered",
+      "NetValue": 1000000.0,
+      "PositiveValue": 1000000.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Quinn",
+      "NetValue": -600000.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": -600000.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Ruby",
+      "NetValue": -600000.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": -600000.0
+    },
+    {
+      "Category": "CaloriesCreated",
+      "Context": "Devon",
+      "NetValue": -600000.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": -600000.0
+    },
+    {
+      "Category": "StressDelta",
+      "Context": null,
+      "NetValue": -126.347427,
+      "PositiveValue": 150.296036,
+      "NegativeValue": -276.643463
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Otto",
+      "NetValue": 3.76117134,
+      "PositiveValue": 18.2016525,
+      "NegativeValue": -14.4404812
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Travaldo",
+      "NetValue": -3.57797813,
+      "PositiveValue": 22.6024361,
+      "NegativeValue": -26.1804142
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Abe",
+      "NetValue": -20.8581276,
+      "PositiveValue": 5.89013,
+      "NegativeValue": -26.7482586
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Leira",
+      "NetValue": -3.51697731,
+      "PositiveValue": 19.2534237,
+      "NegativeValue": -22.770401
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Hassan",
+      "NetValue": -41.6495,
+      "PositiveValue": 5.51510334,
+      "NegativeValue": -47.1646042
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Quinn",
+      "NetValue": -19.48176,
+      "PositiveValue": 5.76172447,
+      "NegativeValue": -25.2434845
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Meep",
+      "NetValue": 3.77773476,
+      "PositiveValue": 20.996666,
+      "NegativeValue": -17.2189312
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Ruby",
+      "NetValue": -7.888441,
+      "PositiveValue": 18.0602722,
+      "NegativeValue": -25.9487133
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Devon",
+      "NetValue": -11.2401257,
+      "PositiveValue": 15.7787552,
+      "NegativeValue": -27.01888
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Marie",
+      "NetValue": -10.1194782,
+      "PositiveValue": 5.55010557,
+      "NegativeValue": -15.6695843
+    },
+    {
+      "Category": "StressDelta",
+      "Context": "Ada",
+      "NetValue": -15.5780478,
+      "PositiveValue": 12.7170954,
+      "NegativeValue": -28.2951431
+    },
+    {
+      "Category": "DiseaseAdded",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": -1.0
+    },
+    {
+      "Category": "DiseaseAdded",
+      "Context": "Ada",
+      "NetValue": 1.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseAdded",
+      "Context": "Hassan",
+      "NetValue": -1.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": -1.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": null,
+      "NetValue": 4464.0,
+      "PositiveValue": 4464.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Otto",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Travaldo",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Abe",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Leira",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Hassan",
+      "NetValue": 4464.0,
+      "PositiveValue": 4464.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Quinn",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Meep",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Ruby",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Devon",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Marie",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DiseaseStatus",
+      "Context": "Ada",
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "LevelUp",
+      "Context": null,
+      "NetValue": 2.0,
+      "PositiveValue": 2.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "ToiletIncident",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": null,
+      "NetValue": 3.0,
+      "PositiveValue": 186.0,
+      "NegativeValue": -183.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Construction Supply",
+      "NetValue": 2.0,
+      "PositiveValue": 51.0,
+      "NegativeValue": -49.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Build",
+      "NetValue": 0.0,
+      "PositiveValue": 36.0,
+      "NegativeValue": -36.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Harvest",
+      "NetValue": -5.0,
+      "PositiveValue": 27.0,
+      "NegativeValue": -32.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Life Support Supply to <link=\"ALGAEHABITAT\">Algae Terrarium</link>",
+      "NetValue": -2.0,
+      "PositiveValue": 6.0,
+      "NegativeValue": -8.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Farming Supply",
+      "NetValue": 8.0,
+      "PositiveValue": 27.0,
+      "NegativeValue": -19.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Dig",
+      "NetValue": -5.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": -6.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Store <link=\"DIRTYWATER\">Polluted Water</link>",
+      "NetValue": 2.0,
+      "PositiveValue": 10.0,
+      "NegativeValue": -8.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Store <link=\"BASICPLANTFOOD\">Meal Lice</link>",
+      "NetValue": 1.0,
+      "PositiveValue": 8.0,
+      "NegativeValue": -7.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Shower",
+      "NetValue": 1.0,
+      "PositiveValue": 6.0,
+      "NegativeValue": -5.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Disinfect",
+      "NetValue": 0.0,
+      "PositiveValue": 2.0,
+      "NegativeValue": -2.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Life Support Supply to <link=\"AIRFILTER\">Deodorizer</link>",
+      "NetValue": 2.0,
+      "PositiveValue": 9.0,
+      "NegativeValue": -7.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Mop",
+      "NetValue": -1.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": -1.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Empty Storage",
+      "NetValue": 0.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": -1.0
+    },
+    {
+      "Category": "ChoreStatus",
+      "Context": "Life Support Supply to <link=\"WATERPURIFIER\">Water Sieve</link>",
+      "NetValue": 0.0,
+      "PositiveValue": 2.0,
+      "NegativeValue": -2.0
+    },
+    {
+      "Category": "DomesticatedCritters",
+      "Context": null,
+      "NetValue": 1.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "DomesticatedCritters",
+      "Context": "<link=\"GLOM\">Morb</link>",
+      "NetValue": 1.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": null,
+      "NetValue": 36.0,
+      "PositiveValue": 36.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"PACU\">Pacu</link>",
+      "NetValue": 17.0,
+      "PositiveValue": 17.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"DRECKO\">Drecko</link>",
+      "NetValue": 10.0,
+      "PositiveValue": 10.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"PACUTROPICAL\">Tropical Pacu</link>",
+      "NetValue": 2.0,
+      "PositiveValue": 2.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"HATCH\">Hatch</link>",
+      "NetValue": 1.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"CRAB\">Pokeshell</link>",
+      "NetValue": 2.0,
+      "PositiveValue": 2.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"PACU\">Pacu Fry</link>",
+      "NetValue": 2.0,
+      "PositiveValue": 2.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"LIGHTBUG\">Shine Bug</link>",
+      "NetValue": 1.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WildCritters",
+      "Context": "<link=\"PACUTROPICAL\">Tropical Fry</link>",
+      "NetValue": 1.0,
+      "PositiveValue": 1.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "RocketsInFlight",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TimeSpentHeader",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": null,
+      "NetValue": 2956.80835,
+      "PositiveValue": 2956.80835,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Quinn",
+      "NetValue": 209.981323,
+      "PositiveValue": 209.981323,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Marie",
+      "NetValue": 227.214462,
+      "PositiveValue": 227.214462,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Leira",
+      "NetValue": 313.334045,
+      "PositiveValue": 313.334045,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Otto",
+      "NetValue": 268.514679,
+      "PositiveValue": 268.514679,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Ada",
+      "NetValue": 295.6997,
+      "PositiveValue": 295.6997,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Ruby",
+      "NetValue": 339.185638,
+      "PositiveValue": 339.185638,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Hassan",
+      "NetValue": 312.034027,
+      "PositiveValue": 312.034027,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Meep",
+      "NetValue": 273.181641,
+      "PositiveValue": 273.181641,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Devon",
+      "NetValue": 347.086121,
+      "PositiveValue": 347.086121,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Abe",
+      "NetValue": 109.182816,
+      "PositiveValue": 109.182816,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "WorkTime",
+      "Context": "Travaldo",
+      "NetValue": 261.81427,
+      "PositiveValue": 261.81427,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": null,
+      "NetValue": 2506.25317,
+      "PositiveValue": 2506.25317,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Otto",
+      "NetValue": 111.582817,
+      "PositiveValue": 111.582817,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Ada",
+      "NetValue": 207.381363,
+      "PositiveValue": 207.381363,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Travaldo",
+      "NetValue": 238.94751,
+      "PositiveValue": 238.94751,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Leira",
+      "NetValue": 225.097748,
+      "PositiveValue": 225.097748,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Hassan",
+      "NetValue": 205.148056,
+      "PositiveValue": 205.148056,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Marie",
+      "NetValue": 272.198273,
+      "PositiveValue": 272.198273,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Quinn",
+      "NetValue": 287.5159,
+      "PositiveValue": 287.5159,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Meep",
+      "NetValue": 243.614136,
+      "PositiveValue": 243.614136,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Abe",
+      "NetValue": 385.038422,
+      "PositiveValue": 385.038422,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Ruby",
+      "NetValue": 163.248688,
+      "PositiveValue": 163.248688,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "TravelTime",
+      "Context": "Devon",
+      "NetValue": 166.781967,
+      "PositiveValue": 166.781967,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": null,
+      "NetValue": 1079.63049,
+      "PositiveValue": 1079.63049,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Abe",
+      "NetValue": 100.199615,
+      "PositiveValue": 100.199615,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Ruby",
+      "NetValue": 92.79973,
+      "PositiveValue": 92.79973,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Devon",
+      "NetValue": 82.99988,
+      "PositiveValue": 82.99988,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Meep",
+      "NetValue": 79.39993,
+      "PositiveValue": 79.39993,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Otto",
+      "NetValue": 215.197876,
+      "PositiveValue": 215.197876,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Travaldo",
+      "NetValue": 95.99968,
+      "PositiveValue": 95.99968,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Hassan",
+      "NetValue": 78.19995,
+      "PositiveValue": 78.19995,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Leira",
+      "NetValue": 57.000145,
+      "PositiveValue": 57.000145,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Marie",
+      "NetValue": 90.79976,
+      "PositiveValue": 90.79976,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Ada",
+      "NetValue": 92.59973,
+      "PositiveValue": 92.59973,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "PersonalTime",
+      "Context": "Quinn",
+      "NetValue": 94.399704,
+      "PositiveValue": 94.399704,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "IdleTime",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "BaseHeader",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": null,
+      "NetValue": -82.323,
+      "PositiveValue": 320.621765,
+      "NegativeValue": -402.944763
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Otto",
+      "NetValue": -19.530056,
+      "PositiveValue": 0.0,
+      "NegativeValue": -19.530056
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Leira",
+      "NetValue": -30.8163872,
+      "PositiveValue": 0.0,
+      "NegativeValue": -30.8163872
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Hassan",
+      "NetValue": -35.0422974,
+      "PositiveValue": 0.0,
+      "NegativeValue": -35.0422974
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Quinn",
+      "NetValue": -51.5367279,
+      "PositiveValue": 0.0,
+      "NegativeValue": -51.5367279
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Ruby",
+      "NetValue": -39.2518158,
+      "PositiveValue": 0.0,
+      "NegativeValue": -39.2518158
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Devon",
+      "NetValue": -22.8961067,
+      "PositiveValue": 0.0,
+      "NegativeValue": -22.8961067
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Marie",
+      "NetValue": -64.55118,
+      "PositiveValue": 0.0,
+      "NegativeValue": -64.55118
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Ada",
+      "NetValue": -33.28728,
+      "PositiveValue": 0.0,
+      "NegativeValue": -33.28728
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Meep",
+      "NetValue": -32.38205,
+      "PositiveValue": 0.0,
+      "NegativeValue": -32.38205
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Travaldo",
+      "NetValue": -28.7785053,
+      "PositiveValue": 0.0,
+      "NegativeValue": -28.7785053
+    },
+    {
+      "Category": "OxygenCreated",
+      "Context": "Abe",
+      "NetValue": -44.8840256,
+      "PositiveValue": 0.0,
+      "NegativeValue": -44.8840256
+    },
+    {
+      "Category": "EnergyCreated",
+      "Context": null,
+      "NetValue": 49054.03,
+      "PositiveValue": 572720.0,
+      "NegativeValue": -523665.969
+    },
+    {
+      "Category": "EnergyWasted",
+      "Context": null,
+      "NetValue": -19376.2734,
+      "PositiveValue": 0.0,
+      "NegativeValue": -19376.2734
+    },
+    {
+      "Category": "ContaminatedOxygenToilet",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    },
+    {
+      "Category": "ContaminatedOxygenSublimation",
+      "Context": null,
+      "NetValue": 0.0,
+      "PositiveValue": 0.0,
+      "NegativeValue": 0.0
+    }
+  ]
+}
